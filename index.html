@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="boardTitle">PyleaMUN Gossip Box - Board</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the Inter font and overall aesthetics */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; /* White background for the entire app */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #e0f2f2; /* Light Teal background for the container box */
+            border-radius: 12px; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .logo {
+            margin-bottom: 20px;
+            width: 80px; /* Small logo size */
+            height: auto;
+            border-radius: 8px; /* Rounded corners for the logo */
+        }
+        h1 {
+            color: #115e59; /* Darker Teal for main title */
+            font-size: 2.25rem; /* text-4xl */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .pyleamun-text {
+            color: #d97706; /* Gold for PyleaMUN */
+        }
+        .gossip-card {
+            background-color: #f8f8f8; /* Slightly off-white for cards */
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+        .gossip-message {
+            font-size: 1.1rem;
+            color: #333;
+            line-height: 1.5;
+        }
+        .gossip-timestamp {
+            font-size: 0.85rem;
+            color: #777;
+            text-align: right;
+        }
+        .visibility-toggle {
+            display: flex; /* Always flex for consistency */
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #555;
+            /* No absolute positioning here, controlled by flex parent */
+        }
+        .visibility-toggle input[type="checkbox"] {
+            /* Hide default checkbox */
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 40px;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+        .visibility-toggle input[type="checkbox"]::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+        .visibility-toggle input[type="checkbox"]:checked {
+            background-color: #0d9488; /* Teal for checked */
+        }
+        .visibility-toggle input[type="checkbox"]:checked::before {
+            transform: translateX(20px);
+        }
+        .chair-mode-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .chair-mode-toggle-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #444;
+        }
+        .chair-mode-toggle-display input[type="checkbox"] {
+            /* Hide default checkbox */
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 50px;
+            height: 25px;
+            background-color: #ccc;
+            border-radius: 12.5px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+        .chair-mode-toggle-display input[type="checkbox"]::before {
+            content: '';
+            width: 21px;
+            height: 21px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+        .chair-mode-toggle-display input[type="checkbox"]:checked {
+            background-color: #0d9488; /* Teal for checked */
+        }
+        .chair-mode-toggle-display input[type="checkbox"]:checked::before {
+            transform: translateX(25px);
+        }
+        .chair-mode-password-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .chair-mode-activate-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #d97706; /* Gold button */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .chair-mode-activate-button:hover {
+            background-color: #b45309; /* Darker gold on hover */
+        }
+        .committee-selector {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 300px;
+            box-sizing: border-box;
+        }
+        .no-gossip-message {
+            color: #666;
+            font-style: italic;
+            margin-top: 20px;
+        }
+        .delete-button {
+            background-color: #ef4444; /* Red for delete */
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px; /* Space from other elements */
+            align-self: flex-end; /* Align to the right within the card */
+            border: none;
+        }
+        .delete-button:hover {
+            background-color: #dc2626; /* Darker red on hover */
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        .modal-content h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%; /* Make buttons full width in modal */
+        }
+        .modal-buttons .confirm-delete {
+            background-color: #ef4444; /* Red */
+            color: white;
+            border: none;
+        }
+        .modal-buttons .confirm-delete:hover {
+            background-color: #dc2626;
+        }
+        .modal-buttons .cancel-delete {
+            background-color: #ccc; /* Gray */
+            color: #333;
+            border: none;
+        }
+        .modal-buttons .cancel-delete:hover {
+            background-color: #bbb;
+        }
+        .password-message {
+            color: #ef4444; /* Red for error messages */
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo with onerror fallback for local image issues -->
+        <img src="logo.png" alt="PyleaMUN Logo" class="logo"
+             onerror="this.onerror=null; this.src='https://placehold.co/80x80/0d9488/ffffff?text=PyleaMUN'; this.style.borderRadius='8px';">
+        <h1 class="font-bold mb-6"><span class="pyleamun-text">PyleaMUN</span> Gossip Box</h1>
+        <p class="text-gray-600 mb-8" id="committeeInfo">Select a committee to view gossip.</p>
+
+        <select id="committeeSelect" class="committee-selector">
+            <option value="" disabled selected>Select a committee</option>
+            <option value="UNEP">UNEP</option>
+            <option value="Security Council">Security Council</option>
+            <option value="ECOSOC">ECOSOC</option>
+            <option value="NATO">NATO</option>
+            <option value="WHO">WHO</option>
+            <option value="Human Rights">Human Rights</option>
+            <option value="UNESCO">UNESCO</option>
+            <option value="UN WOMEN">UN WOMEN</option>
+            <option value="Historical Crisis">Historical Crisis</option>
+            <option value="GENERAL ASSEMBLY">GENERAL ASSEMBLY</option>
+        </select>
+
+        <div class="chair-mode-controls">
+            <div id="chairModePasswordSection">
+                <input type="password" id="chairPasswordInput" class="chair-mode-password-input" placeholder="Enter Chair Password">
+                <button id="activateChairModeBtn" class="chair-mode-activate-button mt-2">Activate Chair Mode</button>
+                <p id="passwordMessage" class="password-message">Incorrect password.</p>
+            </div>
+            <div id="chairModeToggleSection" class="chair-mode-toggle-display" style="display: none;">
+                <label for="chairModeToggle">Chair Mode:</label>
+                <input type="checkbox" id="chairModeToggle" disabled>
+            </div>
+        </div>
+
+        <div id="gossipList" class="w-full">
+            <!-- Gossip messages will be loaded here -->
+            <p id="noGossipMessage" class="no-gossip-message" style="display: none;">No gossip for this committee yet.</p>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmationModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Are you sure?</h3>
+            <p>This action cannot be undone. The gossip message will be permanently deleted.</p>
+            <div class="modal-buttons">
+                <button id="confirmDeleteBtn" class="confirm-delete">Delete</button>
+                <button id="cancelDeleteBtn" class="cancel-delete">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, onSnapshot, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Hardcoded Firebase configuration (replace with your actual config if different)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMffZoQFrljfq756xHfb6X2WKQCe7C6XQ",
+            authDomain: "pyleamun-gossip-box.firebaseapp.com",
+            projectId: "pyleamun-gossip-box",
+            storageBucket: "pyleamun-gossip-box.firebasestorage.app",
+            messagingSenderId: "63786548815",
+            appId: "1:63786548815:web:838e9d9764ea71903d343a"
+        };
+
+        // Extract appId from the hardcoded config
+        const appId = firebaseConfig.appId.split(':')[1];
+
+        let app;
+        let db;
+        let auth;
+        let userId = 'anonymous';
+        let currentCommitteeId = '';
+        let isChairMode = false;
+        let unsubscribeSnapshot = null;
+        let noGossipMessageElement; // Declare globally to cache the element
+
+        const CHAIR_PASSWORD = "@@Pylea@@26";
+
+        /**
+         * Initializes Firebase and authenticates the user.
+         * Ensures db and auth instances are set.
+         */
+        async function initializeFirebaseAndAuth() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                await signInAnonymously(auth);
+                userId = auth.currentUser?.uid || crypto.randomUUID();
+                console.log("Firebase initialized and authenticated anonymously. User ID:", userId);
+
+                // After Firebase is initialized, check for URL parameter and load data
+                const urlParams = new URLSearchParams(window.location.search);
+                const committeeParam = urlParams.get('committee');
+                if (committeeParam) {
+                    const committeeSelect = document.getElementById('committeeSelect');
+                    committeeSelect.value = committeeParam;
+                    handleCommitteeSelection();
+                }
+
+            } catch (error) {
+                console.error("Error initializing Firebase or authenticating:", error);
+                document.getElementById('committeeInfo').textContent = "Error loading board. Please try again later.";
+            }
+        }
+
+        /**
+         * Shows the custom confirmation modal.
+         * @param {function} onConfirm - Callback function to execute if confirmed.
+         */
+        function showConfirmationModal(onConfirm) {
+            const modal = document.getElementById('confirmationModal');
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            const cancelBtn = document.getElementById('cancelDeleteBtn');
+
+            modal.style.display = 'flex';
+
+            confirmBtn.onclick = null;
+            cancelBtn.onclick = null;
+
+            confirmBtn.onclick = () => {
+                modal.style.display = 'none';
+                onConfirm();
+            };
+
+            cancelBtn.onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
+
+        /**
+         * Helper function to update document visibility in Firestore.
+         * @param {object} firestoreDb - The Firestore database instance.
+         * @param {string} documentId - The ID of the document to update.
+         * @param {boolean} isVisible - The new visibility state.
+         */
+        async function updateDocumentVisibility(firestoreDb, documentId, isVisible) {
+            try {
+                await updateDoc(doc(firestoreDb, `artifacts/${appId}/public/data/gossip`, documentId), {
+                    isVisibleToDelegates: isVisible
+                });
+                console.log(`Visibility for ${documentId} updated to ${isVisible}`);
+            } catch (e) {
+                console.error("Error updating document visibility: ", e);
+                throw e; // Re-throw to allow caller to revert checkbox
+            }
+        }
+
+        /**
+         * Helper function to delete a document from Firestore.
+         * @param {object} firestoreDb - The Firestore database instance.
+         * @param {string} documentId - The ID of the document to delete.
+         */
+        async function deleteGossipDocument(firestoreDb, documentId) {
+            try {
+                await deleteDoc(doc(firestoreDb, `artifacts/${appId}/public/data/gossip`, documentId));
+                console.log(`Document ${documentId} successfully deleted.`);
+            } catch (e) {
+                console.error("Error removing document: ", e);
+                throw e; // Re-throw to allow caller to handle
+            }
+        }
+
+        /**
+         * Handles the deletion of a gossip message.
+         * @param {string} docId - The ID of the document to delete.
+         */
+        async function handleDeleteGossip(docId) {
+            showConfirmationModal(async () => {
+                try {
+                    // Use the helper function to delete
+                    await deleteGossipDocument(db, docId);
+                } catch (e) {
+                    document.getElementById('committeeInfo').textContent = "Error deleting gossip. Please try again.";
+                }
+            });
+        }
+
+        /**
+         * Fetches and displays gossip messages for the selected committee.
+         * Uses onSnapshot for real-time updates.
+         */
+        function fetchGossipMessages() {
+            console.log("fetchGossipMessages called. currentCommitteeId:", currentCommitteeId, "isChairMode:", isChairMode);
+
+            if (!db || !currentCommitteeId) {
+                console.log("DB not initialized or committee not selected. Skipping fetch.");
+                return;
+            }
+
+            if (unsubscribeSnapshot) {
+                unsubscribeSnapshot();
+            }
+
+            const gossipCollectionRef = collection(db, `artifacts/${appId}/public/data/gossip`);
+            let q;
+
+            if (isChairMode) {
+                q = query(gossipCollectionRef, where("committeeId", "==", currentCommitteeId));
+            } else {
+                q = query(gossipCollectionRef,
+                          where("committeeId", "==", currentCommitteeId),
+                          where("isVisibleToDelegates", "==", true));
+            }
+
+            unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+                const gossipList = document.getElementById('gossipList');
+                gossipList.innerHTML = '';
+                let hasGossip = false;
+
+                snapshot.forEach((docSnap) => { // Renamed 'doc' to 'docSnap' to avoid potential conflict
+                    hasGossip = true;
+                    const data = docSnap.data();
+                    const gossipCard = document.createElement('div');
+                    gossipCard.className = 'gossip-card';
+
+                    const messagePara = document.createElement('p');
+                    messagePara.className = 'gossip-message';
+                    messagePara.textContent = data.message;
+
+                    const timestampPara = document.createElement('p');
+                    timestampPara.className = 'gossip-timestamp';
+                    timestampPara.textContent = new Date(data.timestamp).toLocaleString();
+
+                    gossipCard.appendChild(messagePara);
+                    gossipCard.appendChild(timestampPara);
+
+                    // Controls for Chair Mode
+                    if (isChairMode) {
+                        console.log("Rendering chair controls for doc:", docSnap.id);
+                        const controlsDiv = document.createElement('div');
+                        controlsDiv.className = 'flex flex-col sm:flex-row justify-between items-center w-full mt-2 gap-2';
+
+                        const visibilityToggleDiv = document.createElement('div');
+                        visibilityToggleDiv.className = 'visibility-toggle flex-grow justify-start';
+
+                        const label = document.createElement('label');
+                        label.textContent = 'Visible to Delegates:';
+                        label.setAttribute('for', `toggle-${docSnap.id}`);
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `toggle-${docSnap.id}`;
+                        checkbox.checked = data.isVisibleToDelegates;
+                        checkbox.addEventListener('change', async (event) => {
+                            try {
+                                // Use the helper function to update visibility
+                                await updateDocumentVisibility(db, docSnap.id, event.target.checked);
+                            } catch (e) {
+                                event.target.checked = !event.target.checked; // Revert checkbox state
+                            }
+                        });
+
+                        visibilityToggleDiv.appendChild(label);
+                        visibilityToggleDiv.appendChild(checkbox);
+
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className = 'delete-button';
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.addEventListener('click', () => handleDeleteGossip(docSnap.id));
+
+                        controlsDiv.appendChild(visibilityToggleDiv);
+                        controlsDiv.appendChild(deleteButton);
+                        gossipCard.appendChild(controlsDiv);
+                    }
+                    gossipList.appendChild(gossipCard);
+                });
+
+                // Use the globally cached noGossipMessageElement
+                if (noGossipMessageElement) {
+                    if (hasGossip) {
+                        noGossipMessageElement.style.display = 'none';
+                    } else {
+                        noGossipMessageElement.style.display = 'block';
+                    }
+                } else {
+                    console.warn("noGossipMessageElement is null. Cannot update its display.");
+                }
+
+            }, (error) => {
+                console.error("Error fetching gossip messages:", error);
+                document.getElementById('committeeInfo').textContent = "Error fetching gossip. Please try again.";
+                if (noGossipMessageElement) {
+                    noGossipMessageElement.style.display = 'block';
+                    noGossipMessageElement.textContent = "Failed to load gossip messages.";
+                }
+            });
+        }
+
+        /**
+         * Updates the board title and fetches messages when a committee is selected.
+         */
+        function handleCommitteeSelection() {
+            const committeeSelect = document.getElementById('committeeSelect');
+            currentCommitteeId = committeeSelect.value;
+            if (currentCommitteeId) {
+                document.getElementById('boardTitle').textContent = `PyleaMUN Gossip Box - ${currentCommitteeId}`;
+                document.getElementById('committeeInfo').textContent = `Displaying gossip for ${currentCommitteeId}`;
+                fetchGossipMessages();
+            } else {
+                document.getElementById('boardTitle').textContent = `PyleaMUN Gossip Box - Board`;
+                document.getElementById('committeeInfo').textContent = `Select a committee to view gossip.`;
+                document.getElementById('gossipList').innerHTML = '';
+                if (noGossipMessageElement) {
+                    noGossipMessageElement.style.display = 'none';
+                }
+                if (unsubscribeSnapshot) {
+                    unsubscribeSnapshot();
+                }
+            }
+        }
+
+        /**
+         * Handles the activation of Chair Mode via password.
+         */
+        function activateChairMode() {
+            const passwordInput = document.getElementById('chairPasswordInput');
+            const passwordMessage = document.getElementById('passwordMessage');
+            const chairModePasswordSection = document.getElementById('chairModePasswordSection');
+            const chairModeToggleSection = document.getElementById('chairModeToggleSection');
+            const chairModeToggle = document.getElementById('chairModeToggle');
+
+            if (passwordInput.value === CHAIR_PASSWORD) {
+                isChairMode = true;
+                passwordMessage.style.display = 'none';
+                chairModePasswordSection.style.display = 'none';
+                chairModeToggleSection.style.display = 'flex';
+                chairModeToggle.checked = true;
+                chairModeToggle.disabled = false; // ENABLE THE TOGGLE HERE
+                fetchGossipMessages(); // Re-fetch messages in chair mode
+                console.log("Chair Mode Activated. isChairMode:", isChairMode, "Toggle disabled:", chairModeToggle.disabled);
+            } else {
+                passwordMessage.textContent = "Incorrect password.";
+                passwordMessage.style.display = 'block';
+                console.log("Incorrect password entered.");
+            }
+        }
+
+        /**
+         * Handles toggling Chair Mode after it's been activated.
+         */
+        function toggleChairMode() {
+            const chairModeToggle = document.getElementById('chairModeToggle');
+            const chairModePasswordSection = document.getElementById('chairModePasswordSection');
+            const chairModeToggleSection = document.getElementById('chairModeToggleSection');
+            const passwordInput = document.getElementById('chairPasswordInput');
+            const passwordMessage = document.getElementById('passwordMessage');
+
+            isChairMode = chairModeToggle.checked;
+            console.log("Chair Mode toggled. New isChairMode:", isChairMode);
+
+            if (!isChairMode) {
+                chairModePasswordSection.style.display = 'flex';
+                chairModeToggleSection.style.display = 'none';
+                chairModeToggle.disabled = true; // DISABLE THE TOGGLE HERE
+                passwordInput.value = '';
+                passwordMessage.style.display = 'none';
+            }
+            fetchGossipMessages(); // Re-fetch messages to apply chair mode filtering/display
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cache the noGossipMessageElement once the DOM is ready
+            noGossipMessageElement = document.getElementById('noGossipMessage');
+
+            initializeFirebaseAndAuth();
+
+            const committeeSelect = document.getElementById('committeeSelect');
+            const activateChairModeBtn = document.getElementById('activateChairModeBtn');
+            const chairModeToggle = document.getElementById('chairModeToggle');
+
+            committeeSelect.addEventListener('change', handleCommitteeSelection);
+            activateChairModeBtn.addEventListener('click', activateChairMode);
+            chairModeToggle.addEventListener('change', toggleChairMode);
+
+            document.getElementById('passwordMessage').style.display = 'none';
+
+            // The URL parameter check is now handled inside initializeFirebaseAndAuth
+            // to ensure Firebase is ready before trying to fetch data based on URL.
+        });
+    </script>
+</body>
+</html>
