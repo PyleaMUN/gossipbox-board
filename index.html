@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="boardTitle">PyleaMUN Gossip Box - Board</title>
-    <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
         /* Custom styles for the Inter font and overall aesthetics */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #ffffff; /* White background for the entire app */
+            background-color: #E0FFFF; /* Light Aqua background for the entire app */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -18,8 +19,25 @@
             padding: 20px;
             box-sizing: border-box;
         }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #c0f0f0; /* Lighter aqua tone */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #008080; /* Teal tone */
+            border-radius: 10px;
+            cursor: grab;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #006b6b; /* Even darker on hover */
+        }
+
         .container {
-            background-color: #e0f2f2; /* Light Teal background for the container box */
+            background-color: #FFF0D9; /* Light Peach/Lemon background for the container box */
             border-radius: 12px; /* More rounded corners */
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Softer shadow */
             padding: 30px;
@@ -38,15 +56,26 @@
             border-radius: 8px; /* Rounded corners for the logo */
         }
         h1 {
-            color: #115e59; /* Darker Teal for main title */
-            font-size: 2.25rem; /* text-4xl */
+            font-family: 'Fredoka One', cursive; /* Applied Fredoka One */
+            color: #008080; /* Bold Teal for main title */
+            font-size: 3.75rem; /* text-6xl by default */
             margin-bottom: 1rem; /* mb-4 */
         }
+        @media (max-width: 640px) { /* Tailwind's sm breakpoint */
+            h1 {
+                font-size: 3rem; /* text-5xl on small screens */
+            }
+        }
         .pyleamun-text {
-            color: #d97706; /* Gold for PyleaMUN */
+            color: #FF69B4; /* Hot Pink for PyleaMUN accent */
+        }
+        .text-gray-600 { /* For the descriptive paragraph near title */
+            color: #36454F; /* Dark Charcoal for text */
+            font-size: 1.125rem; /* text-lg for better readability */
+            font-weight: 500; /* font-medium */
         }
         .gossip-card {
-            background-color: #f8f8f8; /* Slightly off-white for cards */
+            background-color: #FFFFFF; /* Clean white for cards */
             border: 1px solid #e0e0e0;
             border-radius: 10px;
             padding: 15px;
@@ -61,6 +90,7 @@
             font-size: 1.1rem;
             color: #333;
             line-height: 1.5;
+            font-weight: 500; /* font-medium for prominence */
         }
         .gossip-timestamp {
             font-size: 0.85rem;
@@ -68,12 +98,12 @@
             text-align: right;
         }
         .visibility-toggle {
-            display: flex; /* Always flex for consistency */
+            display: flex;
             align-items: center;
             gap: 8px;
             font-size: 0.9rem;
-            color: #555;
-            /* No absolute positioning here, controlled by flex parent */
+            color: #36454F; /* Dark Charcoal */
+            font-weight: 600; /* font-semibold */
         }
         .visibility-toggle input[type="checkbox"] {
             /* Hide default checkbox */
@@ -100,7 +130,7 @@
             transition: transform 0.3s ease;
         }
         .visibility-toggle input[type="checkbox"]:checked {
-            background-color: #0d9488; /* Teal for checked */
+            background-color: #008080; /* Bold Teal for checked */
         }
         .visibility-toggle input[type="checkbox"]:checked::before {
             transform: translateX(20px);
@@ -120,7 +150,7 @@
             gap: 10px;
             font-size: 1rem;
             font-weight: 600;
-            color: #444;
+            color: #36454F; /* Dark Charcoal */
         }
         .chair-mode-toggle-display input[type="checkbox"] {
             /* Hide default checkbox */
@@ -147,7 +177,7 @@
             transition: transform 0.3s ease;
         }
         .chair-mode-toggle-display input[type="checkbox"]:checked {
-            background-color: #0d9488; /* Teal for checked */
+            background-color: #008080; /* Bold Teal for checked */
         }
         .chair-mode-toggle-display input[type="checkbox"]:checked::before {
             transform: translateX(25px);
@@ -159,11 +189,13 @@
             border-radius: 8px;
             font-size: 16px;
             box-sizing: border-box;
+            background-color: #ffffff;
+            color: #36454F;
         }
         .chair-mode-activate-button {
             width: 100%;
             padding: 10px;
-            background-color: #d97706; /* Gold button */
+            background-color: #FF4500; /* Vibrant Orange */
             color: white;
             border: none;
             border-radius: 8px;
@@ -171,24 +203,33 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 69, 0, 0.3);
         }
         .chair-mode-activate-button:hover {
-            background-color: #b45309; /* Darker gold on hover */
+            background-color: #CC3700; /* Darker orange on hover */
         }
         .committee-selector {
             margin-bottom: 20px;
             padding: 10px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #c0e0e0; /* Lighter border */
             border-radius: 8px;
             font-size: 16px;
             width: 100%;
             max-width: 300px;
             box-sizing: border-box;
+            background-color: #ffffff; /* White background */
+            color: #36454F; /* Dark Charcoal text */
+        }
+        .committee-selector:focus {
+            outline: none;
+            border-color: #008080;
+            box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.2);
         }
         .no-gossip-message {
-            color: #666;
+            color: #36454F; /* Dark Charcoal */
             font-style: italic;
             margin-top: 20px;
+            font-weight: 500; /* font-medium */
         }
         .delete-button {
             background-color: #ef4444; /* Red for delete */
@@ -230,8 +271,11 @@
         }
         .modal-content h3 {
             font-size: 1.5rem;
-            color: #333;
+            color: #008080; /* Bold Teal */
             margin-bottom: 20px;
+        }
+        .modal-content p {
+            color: #36454F; /* Dark Charcoal */
         }
         .modal-buttons {
             display: flex;
@@ -246,6 +290,7 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
             width: 100%; /* Make buttons full width in modal */
+            box-shadow: none; /* Remove default button shadow for modal buttons */
         }
         .modal-buttons .confirm-delete {
             background-color: #ef4444; /* Red */
@@ -298,7 +343,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Logo with onerror fallback for local image issues -->
         <img src="logo.png" alt="PyleaMUN Logo" class="logo"
              onerror="this.onerror=null; this.src='https://placehold.co/80x80/0d9488/ffffff?text=PyleaMUN'; this.style.borderRadius='8px';">
         <h1 class="font-bold mb-6"><span class="pyleamun-text">PyleaMUN</span> Gossip Box</h1>
@@ -331,15 +375,12 @@
         </div>
 
         <div id="gossipList" class="w-full">
-            <!-- Gossip messages will be loaded here -->
             <p id="noGossipMessage" class="no-gossip-message" style="display: none;">No gossip for this committee yet.</p>
         </div>
     </div>
 
-    <!-- Navigation Button to Submission Page -->
     <a href="https://pyleamun.github.io/gossipbox/" class="nav-button">Go to Gossip Submission</a>
 
-    <!-- Custom Confirmation Modal -->
     <div id="confirmationModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <h3>Are you sure?</h3>
@@ -351,7 +392,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
